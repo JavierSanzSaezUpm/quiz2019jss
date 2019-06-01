@@ -1,0 +1,39 @@
+<h1>
+    Users
+</h1>
+
+<table>
+    <% for (var i in users) { %>
+    <tr>
+        <td>
+            <a href="/users/<%= users[i].id %>" ><%= users[i].username %></a>
+            <%= users[i].isAdmin ? "(admin)" : "" %>
+        </td>
+
+        <% if (session.user) { %>
+
+            <% if (session.user.isAdmin || session.user.id === users[i].id) { %>
+                <td>
+                    <a href="/users/<%= users[i].id %>/edit"class="button">edit</a>
+                </td>
+            <%  } %>
+
+            <% if (session.user.isAdmin && session.user.id !== users[i].id) { %>
+                <td>
+                    <a href="/users/<%= users[i].id %>?_method=DELETE"
+                       onClick="return confirm('Delete user: <%= users[i].username %>');"
+                        class="button">delete</a>
+                </td>
+            <% } %>
+
+        <% } %>
+    </tr>
+    <%  } %>
+</table>
+
+
+<% if (session.user) { %>
+    <% if (session.user.isAdmin) { %>
+        <a href="/users/new" class="button">Create new user</a>
+    <%  } %>
+<% } %>
