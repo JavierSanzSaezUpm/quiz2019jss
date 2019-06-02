@@ -1,22 +1,8 @@
-<h2 class="edit">Edit Quiz <%=quiz.id%></h2>
-<form method="post" action="/quizzes/<%=quiz.id%>?_method=PUT">
-  <table class="editQuiz">
-        <tr>
-          <td>
-            <span class="question">Question:</span>
-            <input type="text" value="<%=quiz.question%>" class="answer" name="question" autocomplete="off">
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <span class="answer">Answer:</span>
-            <input type="text" value="<%=quiz.answer%>" class="answer" name="answer" autocomplete="off">
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <input type="submit" class="button" value="Edit Quiz">
-          </td>
-        </tr>
-  </table>
+
+<h1>
+    Edit question:
+</h1>
+
+<form method="post" action="/quizzes/<%= quiz.id %>?_method=PUT" enctype="multipart/form-data" >
+    <% include _form.ejs %>
 </form>

@@ -1,32 +1,44 @@
+var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var createError = require('http-errors');
-var partials = require('express-partials');
-var methodOverride = require('method-override');
 var favicon = require('serve-favicon');
 var cookieParser = require('cookie-parser');
+var logger = require('morgan');
 var session = require('express-session');
 var SequelizeStore = require('connect-session-sequelize')(session.Store);
+var partials = require('express-partials');
 var flash = require('express-flash');
-var logger = require('morgan');
+var methodOverride = require('method-override');
 
 var indexRouter = require('./routes/index');
+
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(favicon(path.join(__dirname,'public','favicon.ico')));
+
+// In production (Heroku) I redirect the HTTP requests to https.
+// Documentation: http://jaketrent.com/post/https-redirect-node-heroku/
+if (app.get('env') === 'production') {
+  app.use(function(req, res, next) {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      res.redirect('https://' + req.get('Host') + req.url);
+    } else {
+      next()
+    }
+  });
+}
+
+
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-//Set static folder 
-app.use(express.static(path.join(__dirname, 'public')));
-
-//Almacenamiento de session en BBDD
+// Configuracion de la session para almacenarla en BBDD usando Sequelize.
 var sequelize = require("./models");
 var sessionStore = new SequelizeStore({
   db: sequelize,
@@ -35,28 +47,36 @@ var sessionStore = new SequelizeStore({
   expiration: 4 * 60 * 60 * 1000  // The maximum age (in milliseconds) of a valid session. (4 hours)
 });
 app.use(session({
-  secret: "Quiz 2019",
+  secret: "Quiz 2018",
   store: sessionStore,
   resave: false,
   saveUninitialized: true
 }));
 
-// Dynamic Helper:
+app.use(methodOverride('_method', {methods: ["POST", "GET"]}));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(partials());
+app.use(flash());
+
+// Control de Acceso HTTP (CORS) - Sonsoles
 app.use((req, res, next) => {
-  // To use req.session in the views
-  res.locals.session = req.session;
-  // To use req.url in the views
-  res.locals.url = req.url;
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
 });
 
-//Override with post and get
-app.use(methodOverride('_method', {methods: ["POST", "GET"]}));
+// Dynamic Helper:
+app.use(function(req, res, next) {
 
-//Use partials
-app.use(partials());
-//Use flash
-app.use(flash());
+  // To use req.session in the views
+  res.locals.session = req.session;
+
+  // To use req.url in the views
+  res.locals.url = req.url;
+
+  next();
+});
+
 app.use('/', indexRouter);
 
 // catch 404 and forward to error handler
@@ -69,6 +89,7 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
+
   // render the error page
   res.status(err.status || 500);
   res.render('error');

@@ -1,33 +1,64 @@
-<h1 class="title">All Quizzes</h1>
 
+<div class="right">
+    <form method="get" action="<%= url %>">
+        <input type="text" name="search" value="<%= locals.search || '' %>" placeholder="question to search" autocomplete="off" />
+        <input type="submit" value="Search">
 
-<table class="quizzes>">
-  <% for (var i in quizzes) { %>
-  <% var quiz = quizzes[i]; %>
+        <% if (session.user) { %>
+            <br/>
+
+            <div>
+                <label>Solo favoritos:</label>
+                <input type="checkbox" name="searchfavourites"
+                       value="1" <%= locals.searchfavourites ? 'checked' : '' %> >
+                <img class="star" src="/images/star_yellow.png" \>
+            </div>
+        <% } %>
+
+    </form>
+</div>
+
+<h1>
+    <%= title || "Questions" %>:
+</h1>
+
+<table id="quizzesIndex">
+    <% for (var i in quizzes) { %>
+    <% var quiz = quizzes[i]; %>
     <tr>
-      <div>
-          <td><a href="/quizzes/<%=quiz.id%>/play" class="question"><%=quiz.question%></a></td>
-          <td><a href="/quizzes/<%=quiz.id%>" class="button">Show</a></td>
-          <td><a href="/quizzes/<%=quiz.id%>/edit" class="button">Edit</a></td>
-          <td><a href="/quizzes/<%=quiz.id%>?_method=DELETE" class="button" onclick="return confirm('Delete: <%=quiz.question%>?');">Delete</a></td>
-      </div>
+
+        <td>
+            <% var attachment = quiz.attachment; %>
+            <% include ../attachments/_show %>
+        </td>
+
+        <td>
+            <% include ../favourites/_stars.ejs %>
+
+            <a href="/quizzes/<%= quiz.id %>/play"><%= quiz.question %></a>
+            <br />
+            <small> (by <%= quiz.author ? quiz.author.username : "Anonymous" %>) </small>
+        </td>
+
+        <td>
+            <% if (session.user) { %>
+                <% if (session.user.isAdmin || session.user.id === quiz.authorId) { %>
+                        <a href="/quizzes/<%= quiz.id %>"class="button">show</a>
+
+                        <a href="/quizzes/<%= quiz.id %>/edit"class="button">edit</a>
+
+                        <a href="/quizzes/<%= quiz.id %>?_method=DELETE"
+                           onClick="return confirm('Delete: <%= quiz.question %>');"
+                            class="button">
+                delete
+                        </a>
+                <% } %>
+            <% } %>
+        </td>
     </tr>
-  <% } %>
+    <% } %>
 </table>
 
-<h3 class="quizzesOptions">
-    <a href="/quizzes/new" class="button">New Quiz</a>
-</h3>
-
-<h3 class="right">
-  <tr>
-    <form method="get" action="<%= url %>">
-      <td>
-        <input type="text" name="search" value="<%= locals.search || '' %>" placeholder="Lost?" autocomplete="off" />
-      </td>
-      <td>
-        <input type="submit" value="Search">
-      </td>
-    </form>
-  </tr>
-</h3>
+<% if (session.user) { %>
+    <a href="/quizzes/new" class="button">Create New Question></a>
+<% } %>

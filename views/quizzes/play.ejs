@@ -1,44 +1,48 @@
-<h2 class="play">Play Quiz <%=quiz.id%></h2>
-<form method="get" action="/quizzes/<%=quiz.id%>/check">
-  <table class="playQuiz">
-        <tr>
-            <td>
-                <span class="question"><%=quiz.question%></span>
-                <input type="text" placeholder="Answer" class="answer" name="answer" autocomplete="off">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <input type="submit" class="button" value="Check">
-            </td>
-        </tr>
-  </table>
+
+<h1>
+    Play:
+</h1>
+
+<form method="get" action="/quizzes/<%= quiz.id %>/check">
+
+
+    <div class="quizItem">
+
+        <div>
+            <% var attachment = quiz.attachment; %>
+            <% include ../attachments/_show %>
+        </div>
+
+        <div>
+            <% include ../favourites/_stars.ejs %>
+            <br/>
+            <b><%= quiz.question %></b>
+
+            <div class="wideRow">
+                <input type="text" class="itemWide" name="answer" value="<%= answer %>" placeholder="Answer" autocomplete="off"/>
+                <input type="submit" class="itemNarrow" value="Check">
+            </div>
+
+            <small> by <%= quiz.author ? quiz.author.username : "Anonymous" %> </small>
+        </div>
+    </div>
+
 </form>
 
-<table class="tips">
-    <tr>
-        <td>
-            <h3>Quiz Tips:</h3>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <% if(session.user){ %>
-                <% include ../tips/new %>
-            <% } %>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <% var tips = quiz.tips; %>
-            <% var quizId = quiz.id; %>
-            <% var quizAuthorId = quiz.authorId; %>
-        </td>
-    </tr>
-            <% include ../tips/index %>
-    <tr>
-        <td>
-            <a href="/quizzes" class="button">Go Back</a>
-        </td>
-    </tr>
-</table>
+
+<h1>
+    Tips:
+</h1>
+
+<% if (session.user) { %>
+    <% include ../tips/new %>
+<% } %>
+
+<% var tips = quiz.tips; %>
+<% var quizId = quiz.id; %>
+<% var quizAuthorId = quiz.authorId; %>
+
+<% include ../tips/index %>
+
+
+<a href="/goback" class="button">Go back</a>

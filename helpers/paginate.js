@@ -15,7 +15,7 @@ const addPagenoToUrl = (url, pageno, _param_name) => {
 
 // Helper function used to paginate.
 // Return the HTML links used to paginate.
-//
+// 
 const paginate = (totalItems, itemsPerPage, currentPage, url, param_name) => {
 
     if (totalItems <= itemsPerPage) {
@@ -66,7 +66,7 @@ const paginate = (totalItems, itemsPerPage, currentPage, url, param_name) => {
         }
     }
 
-    // Next pages: between the middle pages and the last page
+    // Next pages: betwenn the middle pages and the last page
     if (currentPage + neighbours < total - 1) {
         const n = Math.trunc(( total + currentPage + neighbours + 1) / 2);
         url = addPagenoToUrl(url, n, param_name);

@@ -1,20 +1,9 @@
-<h2 class="new">Add New Quiz</h2>
-<form method="post" action="/quizzes">
-    <table class="editQuiz">
-        <tr>
-            <td>
-                <span class="question">Question:</span>
-                <input type="text" placeholder="Question" value="<%=quiz.question%>" class="answer" name="question" autocomplete="off">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <span class="answer">Answer:</span>
-                <input type="text" placeholder="Answer" value="<%=quiz.answer%>" class="answer" name="answer" autocomplete="off">
-            </td>
-            <td>
-                <input type="submit" class="button" value="Add Quiz">
-            </td>
-        </tr>
-    </table>
+<h1>
+    Add question:
+</h1>
+
+<form method="post" action="/quizzes" enctype="multipart/form-data" >
+
+    <% include _form.ejs %>
+
 </form>
