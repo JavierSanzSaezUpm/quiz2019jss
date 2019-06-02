@@ -1,5 +1,6 @@
 'use strict';
-var bCrypt = require('bcrypt');
+
+var crypt = require('../helpers/crypt');
 
 module.exports = {
   up(queryInterface, Sequelize) {
