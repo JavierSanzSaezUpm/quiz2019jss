@@ -1,9 +1,47 @@
-<h1>
-    Add question:
-</h1>
+<div class="content">
+  
+  <h2 class="subtitle is-4">Add New Quiz</h2>
 
-<form method="post" action="/quizzes" enctype="multipart/form-data" >
+  <form method="post" action="/quizzes">
 
-    <% include _form.ejs %>
+    <ul>
 
-</form>
+      <li>
+        <span class="tag is-dark is-medium">Question:</span>
+        <input type="text" value="<%=quiz.question%>" class="input is-primary" name="question" autocomplete="off">
+      </li>
+
+      <li>
+        <span class="tag is-dark is-medium">Correct Answer:</span>
+        <input type="text" value="<%=quiz.answer%>" class="input is-primary" name="answer" autocomplete="off">
+      </li>
+
+      <li>
+        <h2 class="subtitle is-5">Choice quiz:</h2>
+        <p>You have to fill all the answers, and one of them must be equal to the correct answer. If you want a normal quiz, leave them in blank</p>
+      </li>
+
+      <li>
+        <span class="tag is-dark is-medium">Answer1:</span>
+        <input type="text" value="<%=quiz.answer1%>" class="input is-primary" name="answer1" autocomplete="off">
+      </li>
+
+      <li>
+        <span class="tag is-dark is-medium">Answer2:</span>
+        <input type="text" value="<%=quiz.answer2%>" class="input is-primary" name="answer2" autocomplete="off">
+      </li>
+
+      <li>
+        <span class="tag is-dark is-medium">Answer3:</span>
+        <input type="text" value="<%=quiz.answer3%>" class="input is-primary" name="answer3" autocomplete="off">
+      </li>
+
+      <li>
+        <input type="submit" class="button is-success" value="Add Quiz">
+      </li>
+
+    </ul>
+              
+  </form>
+  
+</div>

@@ -1,5 +1,5 @@
 {
-  "name": "quiz-2019",
+  "name": "quiz-express",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -11,19 +11,21 @@
     "migrate_win": "sequelize db:migrate --url %DATABASE_URL%",
     "seed_win": "sequelize db:seed:all --url %DATABASE_URL%",
     "open_heroku": "heroku open",
-    "migrate_heroku": "heroku run npx sequelize db:migrate --url \\$DATABASE_URL",
-    "seed_heroku": "heroku run npx sequelize db:seed:all --url \\$DATABASE_URL",
+    "migrate_heroku": "heroku run npx sequelize db:migrate --url \\postgres://ttxwvxrcqmnddj:d8c3e71c879045d4b2cc06668207e7fbaa1d477647bd4bb48096571defe58c2d@ec2-75-101-147-226.compute-1.amazonaws.com:5432/d4ab57b8j8qr6v",
+    "seed_heroku": "heroku run npx sequelize db:seed:all --url \\postgres://ttxwvxrcqmnddj:d8c3e71c879045d4b2cc06668207e7fbaa1d477647bd4bb48096571defe58c2d@ec2-75-101-147-226.compute-1.amazonaws.com:5432/d4ab57b8j8qr6v",
     "reset_heroku": "heroku pg:reset DATABASE",
     "mon_heroku": "heroku maintenance:on",
     "moff_heroku": "heroku maintenance:off",
     "test": "NODE_ENV=testing mocha -R spec"
   },
   "engines": {
-    "node": "10.15.1",
+    "node": "10.15.3",
     "npm": "6.4.1"
   },
   "dependencies": {
-    "cloudinary": "^1.13.2",
+    "bcrypt": "^3.0.6",
+    "bulma-start": "0.0.3",
+    "chart.js": "^2.8.0",
     "connect-session-sequelize": "^6.0.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
@@ -31,20 +33,20 @@
     "express": "~4.16.0",
     "express-flash": "0.0.2",
     "express-partials": "^0.3.0",
-    "express-session": "^1.15.6",
+    "express-session": "^1.16.1",
+    "handlebars": "^4.1.2",
     "http-errors": "~1.6.2",
     "method-override": "^3.0.0",
     "morgan": "~1.9.0",
-    "multer": "^1.4.1",
-    "pg": "^7.9.0",
-    "sequelize": "^5.1.1",
+    "nodemon": "^1.19.0",
+    "pg": "^7.11.0",
+    "sequelize": "^5.3.0",
     "sequelize-cli": "^5.4.0",
-    "serve-favicon": "^2.5.0",
-    "supervisor": "^0.12.0"
+    "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
-    "mocha": "^6.0.2",
-    "sqlite3": "^4.0.6",
-    "zombie": "^6.1.4"
+    "bulma": "^0.7.5",
+    "node-sass": "^4.12.0",
+    "sqlite3": "^4.0.6"
   }
 }

@@ -1,46 +1,45 @@
+"use strict";
+const bCrypt = require('bcrypt');
 const Sequelize = require("sequelize");
 const {models} = require("../models");
-
 const paginate = require('../helpers/paginate').paginate;
 
 // Autoload the user with id equals to :userId
 exports.load = (req, res, next, userId) => {
-
     models.user.findByPk(userId)
-    .then(user => {
-        if (user) {
-            req.user = user;
-            next();
-        } else {
-            req.flash('error', 'There is no user with id=' + userId + '.');
-            throw new Error('No exist userId=' + userId);
-        }
-    })
-    .catch(error => next(error));
+        .then(user => {
+            if (user) {
+                req.user = user;
+                next();
+            } else {
+                req.flash('error', 'There is no user with id=' + userId + '.');
+                throw new Error('No exist userId=' + userId);
+            }
+        })
+        .catch(error => next(error));
 };
-
 
 // GET /users
 exports.index = (req, res, next) => {
-
+    let countOptions = {
+        where: {},
+        include: []
+    };
+    
     models.user.count()
     .then(count => {
-
-        // Pagination:
-
-        const items_per_page = 10;
-
-        // The page to show is given in the query
-        const pageno = parseInt(req.query.pageno) || 1;
-
-        // Create a String with the HTMl used to render the pagination buttons.
-        // This String is added to a local variable of res, which is used into the application layout file.
-        res.locals.paginate_control = paginate(count, items_per_page, pageno, req.url);
+        //Pagination
+        const page_items = 5;
+        //The page shown is in the query
+        const pageno = Number(req.query.pageno) || 1;
+        //Create String with HTML to render pagination buttons
+        res.locals.paginate_control = paginate(count, page_items, pageno, req.url);
 
         const findOptions = {
-            offset: items_per_page * (pageno - 1),
-            limit: items_per_page,
-            order: ['username']
+            ...countOptions,
+            order: [ ['points', 'DESC'] ],
+            offset: page_items*(pageno-1),
+            limit: page_items
         };
 
         return models.user.findAll(findOptions);
@@ -53,57 +52,100 @@ exports.index = (req, res, next) => {
 
 // GET /users/:userId
 exports.show = (req, res, next) => {
-
     const {user} = req;
 
-    res.render('users/show', {user});
-};
-
-
-// GET /users/new
-exports.new = (req, res, next) => {
-
-    const user = {
-        username: "",
-        password: ""
-    };
-
-    res.render('users/new', {user});
-};
-
-
-// POST /users
-exports.create = (req, res, next) => {
-
-    const {username, password} = req.body;
-
-    const user = models.user.build({
-        username,
-        password
-    });
-
-    // Save into the data base
-    user.save({fields: ["username", "password", "salt"]})
-    .then(user => { // Render the users page
-        req.flash('success', 'User created successfully.');
-        if (req.session.user) {
-            res.redirect('/users/' + user.id);
-        } else {
-            res.redirect('/session'); // Redirection to the login page
+    //Show magic methods
+    //console.log(Object.keys(user.__proto__));
+    
+    req.user.getFollowedBy({where: {id: req.session.user.id}})
+    .then(follower => {
+        if(follower.length>0){
+            req.user.followed = true;
         }
-    })
-    .catch(Sequelize.UniqueConstraintError, error => {
-        req.flash('error', `User "${username}" already exists.`);
-        res.render('users/new', {user});
-    })
-    .catch(Sequelize.ValidationError, error => {
-        req.flash('error', 'There are errors in the form:');
-        error.errors.forEach(({message}) => req.flash('error', message));
-        res.render('users/new', {user});
+        req.user.getFollowing({where: {id: req.session.user.id}})
+        .then(following => {
+
+        })
+    }) 
+    .then( () => {
+        req.user.getFollowedBy()
+        .then(followers => {
+            req.user.getFollowing()
+            .then(following => {
+                res.render('users/show', {user,followers,following});
+            })
+        })
+        
     })
     .catch(error => next(error));
 };
 
+//POST /signup
+exports.newUser = (req,res,next) => {
+    const username = req.body.username;
+    const password = req.body.password;
+    const password2 = req.body.password2;
+    models.user.findOne({where: {username: username}})
+    .then(user => {
+        if(user){
+            req.flash('error','User already exists');
+            res.redirect('/signup');
+        }else{
+            if(password===password2){
+                bCrypt.hash(password, 10, (err, hash) => {
+                    models.user.create({username: username,password: hash})
+                        .then(() => {
+                            req.flash('success','User created succesfully');
+                            res.redirect('/login');
+                        })
+                        .catch(Sequelize.ValidationError, error => {
+                            req.flash('error', 'There are errors in the form:');
+                            error.errors.forEach(({message}) => req.flash('error', message));
+                            res.redirect('/signup');
+                        });
+                });
+            }else{
+                req.flash('error','Passwords do not match');
+                res.redirect('/signup');
+            }
+        }
+    })
+    .catch(error => {
+        req.flash('error','Error creating user: ' + error.message);
+        next(error);
+    });
+};
+
+//GET /login
+exports.logIn = (req,res,next) => {
+    if(req.session.user){
+        req.flash('error','You are logged in');
+        return res.redirect('/');
+    }
+    const username = req.query.username;
+    const password = req.query.password;
+    models.user.findOne({where: {username: username}})
+    .then(user => {
+        if(!user){
+            req.flash('error','Nombre de usuario incorrecto');
+            res.redirect('/login');
+        }else{
+            bCrypt.compare(password, user.password, (err, result) => {
+                if(result){
+                    req.session.user = user;
+                    req.flash('success','User logged in succesfully');
+                    res.redirect('/');
+                }else{
+                    req.flash('error','Incorrect password');
+                    res.redirect('/login');
+                }
+            });
+        }
+    }).catch( error => {
+        req.flash('error','Error logging in: ' + error.message);
+        next(error);
+    });
+};
 
 // GET /users/:userId/edit
 exports.edit = (req, res, next) => {
@@ -117,18 +159,31 @@ exports.edit = (req, res, next) => {
 // PUT /users/:userId
 exports.update = (req, res, next) => {
 
-    const {user, body} = req;
+    let {user} = req;
+    let fields_to_update = [];
+    const username = req.body.username;
+    const password = req.body.password;
+    const password2 = req.body.password2;
 
-    // user.username  = body.user.username; // edition not allowed
-    user.password = body.password;
 
-    // Password can not be empty
-    if (!body.password) {
-        req.flash('error', "Password field must be filled in.");
-        return res.render('users/edit', {user});
+    if(username){
+        user.username  = username; // edition not allowed
+        fields_to_update.push('username');
     }
 
-    user.save({fields: ["password", "salt"]})
+    // ¿Cambio el password?
+    if (password) {
+        if(password===password2){
+            console.log('Updating password');
+            user.password = bCrypt.hashSync(password,10);
+            fields_to_update.push('password');
+        }else{
+            req.flash('error','Passwords do not match');
+            res.redirect('/goback');
+        }
+    }
+
+    user.save({fields: fields_to_update})
     .then(user => {
         req.flash('success', 'User updated successfully.');
         res.redirect('/users/' + user.id);
@@ -141,6 +196,17 @@ exports.update = (req, res, next) => {
     .catch(error => next(error));
 };
 
+//GET /logout
+exports.logOut = (req,res,next) => {
+    if(!req.session.user){
+        req.flash('error','You are not logged in');
+        return res.redirect('/login');
+    }else{
+        req.session.user = null;
+        req.flash('success','User logged out successfully');
+        return res.redirect('/login');
+    }
+};
 
 // DELETE /users/:userId
 exports.destroy = (req, res, next) => {
@@ -159,3 +225,42 @@ exports.destroy = (req, res, next) => {
     })
     .catch(error => next(error));
 };
+
+//PUT /users/:userId/follow
+exports.follow = (req,res,next) => {
+    let {user} = req;
+
+    return user.addFollowedBy(req.session.user)
+    .then(() => {
+        models.user.findByPk(req.session.user.id)
+        .then((me) => {
+            me.addFollowing(user)
+            .then(() => {
+                res.redirect('/users/'+req.session.user.id);
+            });
+        });
+    })
+    .catch(error => {
+        console.log(error);
+    });
+};
+
+//PUT /users/:userId/unfollow
+exports.unfollow = (req,res,next) => {
+    let {user} = req;
+
+    return user.removeFollowedBy(req.session.user)
+    .then(() => {
+        models.user.findByPk(req.session.user.id)
+        .then((me) => {
+            me.removeFollowing(user)
+            .then(() => {
+                res.redirect('/users/'+req.session.user.id);
+            });
+        });
+    })
+    .catch(error => {
+        console.log(error);
+    });
+};
+

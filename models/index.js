@@ -1,63 +1,45 @@
 const path = require('path');
-
-// Load ORM
 const Sequelize = require('sequelize');
 
-// To use SQLite data base:
-//    DATABASE_URL = sqlite:quiz.sqlite
-// To use  Heroku Postgres data base:
-//    DATABASE_URL = postgres://user:passwd@host:port/database
-
+//Heroku Postgres DB or SQLite DB
 const url = process.env.DATABASE_URL || "sqlite:quiz.sqlite";
-
-const sequelize = new Sequelize(url);
+const options = {logging: false};
+const sequelize = new Sequelize(url, options);
 
 // Import the definition of the Quiz Table from quiz.js
 sequelize.import(path.join(__dirname, 'quiz'));
 
-// Import the definition of the Tips Table from tip.js
-sequelize.import(path.join(__dirname,'tip'));
-
 // Import the definition of the Users Table from user.js
 sequelize.import(path.join(__dirname,'user'));
 
-// Import the definition of the Attachments Table from attachment.js
-sequelize.import(path.join(__dirname,'attachment'));
+// Import the definition of the Tips Table from tip.js
+sequelize.import(path.join(__dirname,'tip'));
 
 // Session
 sequelize.import(path.join(__dirname,'session'));
 
+//Charge models
+const {quiz,tip,user} = sequelize.models;
 
-// Relation between models
-
-const {quiz, tip, attachment, user} = sequelize.models;
-
-tip.belongsTo(quiz);
-quiz.hasMany(tip);
 
 // Relation 1-to-N between User and Quiz:
 user.hasMany(quiz, {foreignKey: 'authorId'});
 quiz.belongsTo(user, {as: 'author', foreignKey: 'authorId'});
 
-// Relation 1-to-1 between Quiz and Attachment
-attachment.belongsTo(quiz);
-quiz.hasOne(attachment);
+//Favorites
+user.belongsToMany(quiz, {as: 'upvoted', foreignKey: 'userId', through: 'upvotes', otherKey: 'quizId'});
+quiz.belongsToMany(user, {as: 'fans', foreignKey: 'quizId',through: 'upvotes', otherKey: 'userId'});
 
-// Relation 1-to-1 between Quiz and User:
-//    A User has many favourite quizzes.
-//    A quiz has many fans (the users who have marked it as favorite)
-quiz.belongsToMany(user, {
-    as: 'fans',
-    through: 'favourites',
-    foreignKey: 'quizId',
-    otherKey: 'userId'
-});
+//Relationship between quizzes and tips
+tip.belongsTo(quiz);
+quiz.hasMany(tip);
 
-user.belongsToMany(quiz, {
-    as: 'favouriteQuizzes',
-    through: 'favourites',
-    foreignKey: 'userId',
-    otherKey: 'quizId'
-});
+// Relation 1-to-N between User and Tips:
+user.hasMany(tip, {foreignKey: 'authorId'});
+tip.belongsTo(user, {as: 'author', foreignKey: 'authorId'});
+
+//Followers & following
+user.belongsToMany(user, {as: 'followedBy',foreignKey: 'followerId',through: 'followers',otherKey:'followingId'});
+user.belongsToMany(user, {as: 'following',foreignKey: 'followingId',through: 'followers',otherKey:'followerId'});
 
 module.exports = sequelize;

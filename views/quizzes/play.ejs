@@ -1,48 +1,62 @@
+<div class="content">
 
-<h1>
-    Play:
-</h1>
+    <h2 class="subtitle is-4">Play Quiz</h2>
 
-<form method="get" action="/quizzes/<%= quiz.id %>/check">
+    <div class="columns">
+        <div class="column is-two-thirds">
+            <form method="post" action="/quizzes/<%=quiz.id%>/check?_method=PUT">
+                
+                <% if(!quiz.choice){ %>
+                    <ul>
 
+                        <li>
+                            <span class="tag is-dark is-medium"><%=quiz.question%></span>
+                            <input type="text" placeholder="Answer" class="input is-primary" name="answer" autocomplete="off">
+                            <input type="submit" class="button is-success" value="Check">
+                            <a href="/goback" class="button is-info">Go Back</a>
+                        </li>
+                        
+                    </ul>
+                <% }else{ %>
+                    <ul>
 
-    <div class="quizItem">
+                        <li>
+                            <span class="tag is-dark is-medium"><%=quiz.question%></span>
+                            <div class="control">
+                              <div class="select">
+                                <select name="answer">
+                                  <option><%= quiz.answer1 %></option>
+                                  <option><%= quiz.answer2 %></option>
+                                  <option><%= quiz.answer3 %></option>
+                                </select>
+                              </div>
+                            </div>
+                            <input type="submit" class="button is-success" value="Check">
+                            <a href="/goback" class="button is-info">Go Back</a>
+                        </li>
+                        
+                    </ul>
+                <% } %>
 
-        <div>
-            <% var attachment = quiz.attachment; %>
-            <% include ../attachments/_show %>
+                
+            </form>
         </div>
+        
+        <div class="column">
+            <div class="box tips">
+                <h3 class="subtitle is-5">Quiz Tips:</h3>
 
-        <div>
-            <% include ../favourites/_stars.ejs %>
-            <br/>
-            <b><%= quiz.question %></b>
+                <% if(session.user){ %>
+                    <% include ../tips/new %>
+                <% } %>
 
-            <div class="wideRow">
-                <input type="text" class="itemWide" name="answer" value="<%= answer %>" placeholder="Answer" autocomplete="off"/>
-                <input type="submit" class="itemNarrow" value="Check">
+                <% var tips = quiz.tips; %>
+                <% var quizId = quiz.id; %>
+                <% var quizAuthorId = quiz.authorId; %>
+
+                 <% include ../tips/index %>
+
             </div>
-
-            <small> by <%= quiz.author ? quiz.author.username : "Anonymous" %> </small>
-        </div>
+        </div> 
     </div>
-
-</form>
-
-
-<h1>
-    Tips:
-</h1>
-
-<% if (session.user) { %>
-    <% include ../tips/new %>
-<% } %>
-
-<% var tips = quiz.tips; %>
-<% var quizId = quiz.id; %>
-<% var quizAuthorId = quiz.authorId; %>
-
-<% include ../tips/index %>
-
-
-<a href="/goback" class="button">Go back</a>
+</div>   

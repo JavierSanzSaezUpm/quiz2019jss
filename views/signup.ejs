@@ -1,7 +1,6 @@
-<h2 class="subtitle is-4">Edit User:</h2>
-
-<form method="post" action="/users/<%= user.id %>?_method=PUT">
-    <ul>
+<h2 class="subtitle is-4">Welcome! Create an account and start playing!</h2>
+<form method="post" action="/signup">
+   <ul>
         <span class="tag is-dark is-medium">Username:</span>
         <input type="text" class="input" name="username" autocomplete="off">
 
@@ -11,6 +10,6 @@
         <span class="tag is-dark is-medium">Repeat Password:</span>
         <input type="password" class="input" name="password2" autocomplete="off">
 
-        <input type="submit" class="button" value="Edit User">
+        <input type="submit" class="button" value="Log In">
     </ul>
 </form>

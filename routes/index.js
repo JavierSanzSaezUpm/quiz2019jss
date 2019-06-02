@@ -23,14 +23,14 @@ router.get('/', function(req, res, next) {
 });
 //Redirecciona a la pagina desde la que se realizo la solicitud
 router.get('/goback',(req,res,next) => {
-  const url = req.session.backUrl || "/";
-  delete req.session.backUrl;
-  res.redirect(url);
+    const url = req.session.backUrl || "/";
+    delete req.session.backUrl;
+    res.redirect(url);
 });
 //Guarda las rutas que no terminen en new,edit,play,session o un Id
 router.get(['/','/author','/users','/users/:id(\\+d)/quizzes','/quizzes'], (req,res,next) => {
-  req.session.backUrl = req.url;
-  next();
+    req.session.backUrl = req.url;
+    next();
 });
 
 /*------- QUIZZES ROUTES --------*/
@@ -42,11 +42,11 @@ router.get('/users/:userId(\\d+)/quizzes', quizController.index);
 router.get('/quizzes', quizController.index);
 router.get('/quizzes/:quizId(\\d+)/play',sessionController.loginRequired,quizController.playQuiz);
 router.get('/quizzes/:quizId(\\d+)',sessionController.loginRequired,quizController.showQuiz);
-router.get('/quizzes/:quizId(\\d+)/edit', sessionController.loginRequired, quizController.adminOrAuthorRequired,
+router.get('/quizzes/:quizId(\\d+)/edit', sessionController.loginRequired, quizController.adminOrAuthorRequired, 
     quizController.editQuiz);
 router.get('/quizzes/new',sessionController.loginRequired, quizController.newQuiz);
 /*PUT quizzes*/
-router.put('/quizzes/:quizId(\\d+)',sessionController.loginRequired, quizController.adminOrAuthorRequired,
+router.put('/quizzes/:quizId(\\d+)',sessionController.loginRequired, quizController.adminOrAuthorRequired, 
     quizController.updateQuiz);
 router.put('/quizzes/randomplay',quizController.randomPlay);
 router.put('/quizzes/randomcheck/:quizId(\\d+)', quizController.randomCheck);
@@ -60,10 +60,10 @@ router.delete('/quizzes/:quizId(\\d+)', quizController.adminOrAuthorRequired, qu
 
 /* GET Users */
 router.get('/signup', (req,res,next) => {
-  res.render('signup.ejs');
+    res.render('signup.ejs');
 });
 router.get('/login', (req,res,next) => {
-  res.render('login.ejs');
+    res.render('login.ejs');
 });
 router.get('/users', userController.index);
 router.get('/check', userController.logIn);
@@ -86,26 +86,26 @@ router.delete('/users/:userId(\\d+)/unfollow', sessionController.loginRequired, 
 
 /* GET Tips */
 router.get('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)/edit', sessionController.loginRequired ,
-    tipController.adminOrAuthorRequired , tipController.edit);
+	tipController.adminOrAuthorRequired , tipController.edit);
 /* POST Tips */
 router.post('/quizzes/:quizId(\\d+)/tips', sessionController.loginRequired , tipController.create);
 /* PUT Tips */
-router.put('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)', sessionController.loginRequired ,
-    tipController.adminOrAuthorRequired ,tipController.update);
+router.put('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)', sessionController.loginRequired , 
+	tipController.adminOrAuthorRequired ,tipController.update);
 router.put('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)/accept', sessionController.loginRequired,
     tipController.adminOrAuthorRequired, tipController.accept);
 /* DELETE TIPS */
-router.delete('/quizzes/:quizId(\\d+)/tips/:tipId', sessionController.loginRequired ,
-    tipController.adminOrAuthorRequired, );
+router.delete('/quizzes/:quizId(\\d+)/tips/:tipId', sessionController.loginRequired , 
+	tipController.adminOrAuthorRequired, );
 router.delete('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)', sessionController.loginRequired,
     tipController.adminOrAuthorRequired, tipController.destroy);
 
 /*------- UPVOTES ROUTES --------*/
 
 /* PUT Upvotes */
-router.put('/users/:userId(\\d+)/favs/:quizId(\\d+)', sessionController.loginRequired ,
+router.put('/users/:userId(\\d+)/favs/:quizId(\\d+)', sessionController.loginRequired , 
     sessionController.adminOrMyselfRequired , upvoteController.add);
-router.delete('/users/:userId(\\d+)/favs/:quizId(\\d+)', sessionController.loginRequired,
+router.delete('/users/:userId(\\d+)/favs/:quizId(\\d+)', sessionController.loginRequired, 
     sessionController.adminOrMyselfRequired , upvoteController.quit);
 
 /*------- STATS ROUTES --------*/
@@ -118,7 +118,7 @@ router.get('/userstats/:userId(\\d+)', sessionController.loginRequired , statsCo
 
 /*GET Credits*/
 router.get('/credits',function(req, res, next) {
-  res.render('credits.ejs');
+	res.render('credits.ejs');
 });
 
 module.exports = router;

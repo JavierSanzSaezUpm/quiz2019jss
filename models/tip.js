@@ -1,7 +1,5 @@
-
-// Definition of the Tips model:
-
-module.exports = function (sequelize, DataTypes) {
+//Definition of the tips Model
+module.exports = (sequelize, DataTypes) => {
     return sequelize.define('tip',
         {
             text: {

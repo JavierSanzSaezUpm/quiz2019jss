@@ -1,44 +1,80 @@
+<div class="content">
+	<div class="columns">
+		<div class="column is-two-thirds">
+			<h2 class="subtitle is-4">Show Quiz</h2>
+		</div>
 
-<h1>
-    Show question:
-</h1>
+		<div class="column">
+			<small> [Quiz by: 
+				<%if(quiz.author){ %> 
+					<a class="user" href="/users/<%= quiz.author.id %>" ><%= quiz.author.username%></a>
+				<% }else{ %>
+					Anonymous 
+				<% } %>
+			 ]</small>
+              UPVOTE: <% include ../upvotes/_arrowup.ejs %>
+		</div>
+	</div>
 
-<div class="quizItem">
+    <div class="columns">
 
-    <div>
-        <% var attachment = quiz.attachment; %>
-        <% include ../attachments/_show %>
+    <% if(!quiz.choice){ %>
+
+        
+        <div class="column is-two-thirds">
+            <ul>
+                
+                <li>
+                    <span class="tag is-dark is-medium">Question:</span>
+                    <p class="subtitle is-4"><%= quiz.question %></p>
+                </li>
+                <li>
+                    <span class="tag is-success is-medium">Answer:</span>
+                    <p class="subtitle is-4"><%= quiz.answer %></p>
+                    <a href="/goback" class="button is-info">Go Back</a>
+                </li>
+                
+            </ul>
+        </div>
+
+    <% }else{ %>
+
+        <div class="column is-two-thirds">
+            <ul>
+                
+                <li>
+                    <span class="tag is-dark is-medium">Question:</span>
+                    <p class="subtitle is-4"><%= quiz.question %></p>
+                </li>
+                <li>
+                    <span class="tag is-success is-medium">Answers (<b> <%=quiz.answer%> </b>) </span>
+                    <p class="subtitle is-4"><%= quiz.answer1 %></p>
+                    <p class="subtitle is-4"><%= quiz.answer2 %></p>
+                    <p class="subtitle is-4"><%= quiz.answer3 %></p>
+                    <a href="/goback" class="button is-info">Go Back</a>
+                </li>
+                
+            </ul>
+        </div>
+
+    <% } %>
+    
+        
+        <div class="column">
+            <div class="box tips">
+                <h3 class="subtitle is-5">Quiz Tips:</h3>
+
+                <% if(session.user){ %>
+                    <% include ../tips/new %>
+                <% } %>
+
+                <% var tips = quiz.tips; %>
+                <% var quizId = quiz.id; %>
+                <% var quizAuthorId = quiz.authorId; %>
+
+                 <% include ../tips/index %>
+
+            </div>
+        </div> 
     </div>
-
-    <div>
-        <% include ../favourites/_stars.ejs %>
-        <br/>
-        Question: <b><%= quiz.question %></b>
-        <br />
-        Answer: <b><%= quiz.answer %></b>
-        <br />
-        <small> by <%= quiz.author ? quiz.author.username : "Anonymous" %> </small>
-    </div>
-
-</div>
-
-
-<a href="/goback" class="button">Go back</a>
-
-
-<h1>
-    Tips:
-</h1>
-
-<% if (session.user) { %>
-    <% include ../tips/new %>
-<% } %>
-
-<% var tips = quiz.tips; %>
-<% var quizId = quiz.id; %>
-<% var quizAuthorId = quiz.authorId; %>
-
-<% include ../tips/index %>
-
-
-<a href="/goback" class="button">Go back</a>
+</div>   
