@@ -16,80 +16,74 @@
 </head>
 <body>
     <header class="main" id="mainHeader">
-
         <div class="right">
             <% if (!session.user) { %>
-
                 <% if (!!process.env.QUIZ_OPEN_REGISTER) { %>
-                    <a href="/users/new">Register</a>
+                    <a href="/users/new" class="button">Register</a>
                 <% } %>
-
-                <a href="/session">Login</a>
+                <a href="/session" class="button">Login</a>
             <% } else { %>
-                <a href="/users/<%= session.user.id %>"><%= session.user.username %></a>
-                <a href="/session?_method=DELETE">Logout</a>
+                <a href="/users/<%= session.user.id %>" class="button"><%= session.user.username %></a>
+                <a href="/session?_method=DELETE" class="button">Logout</a>
             <% } %>
         </div>
-
         <h1><span class="no-narrow">The</span> Quiz <span class="no-narrow">Site</span></h1>
     </header>
-
     <nav class="main" id="mainNav" role="navigation">
-        <a href="/">Home</a>
-        <a href="/quizzes">Quizzes</a>
+        <a href="/" class="button">Home</a>
+        <a href="/quizzes" class="button">Quizzes</a>
         <% if (session.user) { %>
-            <a href="/users/<%= session.user.id %>/quizzes">My Quizzes</a>
+            <a href="/users/<%= session.user.id %>/quizzes" class="button">My Quizzes</a>
         <% } %>
 
         <% if (session.user) { %>
-            <a href="/users">Users</a>
+            <a href="/users" class="button">Users</a>
         <% } %>
     </nav>
-
     <section class="section">
         <div class="container">
-        <% if (messages.info) { %>
-            <article id='flashinfo'>
-                <h3>Information of interest:</h3>
-                <ul>
-                    <% for (var i in messages.info) { %>
-                        <li> <%= messages.info[i] %> </li>
-                    <% } %>
-                </ul>
-            </article>
-        <% } %>
+            <% if (messages.info) { %>
+                <article id='flashinfo'>
+                    <h3>Information of interest:</h3>
+                    <ul>
+                        <% for (var i in messages.info) { %>
+                            <li> <%= messages.info[i] %> </li>
+                        <% } %>
+                    </ul>
+                </article>
+            <% } %>
 
-        <% if (messages.success) { %>
-            <article id='flashsuccess'>
-                <h3>Tasks completed successfully:</h3>
-                <ul>
-                    <% for (var i in messages.success) { %>
-                        <li> <%= messages.success[i] %> </li>
-                    <% } %>
-                </ul>
-            </article>
-        <% } %>
+            <% if (messages.success) { %>
+                <article id='flashsuccess'>
+                    <h3>Tasks completed successfully:</h3>
+                    <ul>
+                        <% for (var i in messages.success) { %>
+                            <li> <%= messages.success[i] %> </li>
+                        <% } %>
+                    </ul>
+                </article>
+            <% } %>
 
-        <% if (messages.error) { %>
-            <article id='flasherror'>
-                <h3>Errors:</h3>
-                <ul>
-                    <% for (var i in messages.error) { %>
-                        <li> <%= messages.error[i] %> </li>
-                    <% } %>
-                </ul>
-            </article>
-        <% } %>
+            <% if (messages.error) { %>
+                <article id='flasherror'>
+                    <h3>Errors:</h3>
+                    <ul>
+                        <% for (var i in messages.error) { %>
+                            <li> <%= messages.error[i] %> </li>
+                        <% } %>
+                    </ul>
+                </article>
+            <% } %>
 
-        <%- body %>
+            <%- body %>
 
-        <% if (locals.paginate_control) { %>
-            <%- paginate_control %>
-        <% } %>
+            <% if (locals.paginate_control) { %>
+                <%- paginate_control %>
+            <% } %>
         </div>
     </section>
 
-    <footer class="footer level" id="mainFooter">
+    <footer class="footer level">
         <div class="level-left">
             <div class="level-item">
             <a href="http://en.wikipedia.org/wiki/Quiz">
@@ -103,5 +97,6 @@
             </div>
         </div>
     </footer>
+</div>
 </body>
 </html>
