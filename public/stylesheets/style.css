@@ -293,3 +293,11 @@ a.button:hover {
     font-family: "Product Sans Bold";
     src: url("Product Sans Bold.ttf");
 }
+
+.logo{
+    font-size: 200px;
+    position: center;
+}
+.logolink{
+    color: black;
+}
