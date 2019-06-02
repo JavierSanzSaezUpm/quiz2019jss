@@ -13,6 +13,10 @@
           type='text/css'
           media='only screen and (max-width: 480px)'
           href='/stylesheets/smartphone.css'/>
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossorigin="anonymous">
 </head>
 <body>
 <div id="page">
@@ -35,18 +39,23 @@
         <h1><span class="no-narrow">The</span> Quiz <span class="no-narrow">Site</span></h1>
     </header>
 
-    <nav class="main" id="mainNav" role="navigation">
-        <a href="/">Home</a>
-        <a href="/quizzes">Quizzes</a>
-        <% if (session.user) { %>
-            <a href="/users/<%= session.user.id %>/quizzes">My Quizzes</a>
-        <% } %>
-        <a href="/author">Author</a>
-        <% if (session.user) { %>
-            <a href="/users">Users</a>
-        <% } %>
-    </nav>
-
+    <div class="navbar navbar-dark bg-dark" id="mainNav" role="navigation">
+        <div class="container">
+            <div class="collapse navbar-collapse">
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/quizzes">Quizzes</a></li>
+                    <li> <% if (session.user) { %>
+                            <a href="/users/<%= session.user.id %>/quizzes">My Quizzes</a>
+                        <% } %></li>
+                    <li><a href="/author">Author</a></li>
+                    <li> <% if (session.user) { %>
+                            <a href="/users">Users</a>
+                        <% } %></li>
+                </ul>
+            </div>
+        </div>
+    </div>
     <section class="main" id="mainSection">
 
         <% if (messages.info) { %>
@@ -94,5 +103,7 @@
             What is a Quiz?</a>
     </footer>
 </div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 </body>
 </html>
