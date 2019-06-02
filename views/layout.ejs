@@ -13,94 +13,86 @@
           type='text/css'
           media='only screen and (max-width: 480px)'
           href='/stylesheets/smartphone.css'/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css">
 </head>
+<body>
+<div id="page">
+    <header class="main" id="mainHeader">
 
-<body class="body">
-<header class="logo">
-    <a href="/" class="logolink">The Quiz Site</a>
-</header>
-<div>
+        <div class="right">
+            <% if (!session.user) { %>
 
-</div>
-<nav class="navbar" role="navigation" aria-label="main navigation">
-      <div id="navMenu" class="navbar-menu">
+                <% if (!!process.env.QUIZ_OPEN_REGISTER) { %>
+                    <a href="/users/new">Register</a>
+                <% } %>
 
-        <div class="navbar-start">
-            <a class="navbar-item" href="/">Home</a>
-            <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link" href="/quizzes/random">Play</a>
-                <div class="navbar-dropdown is-boxed">
-                    <a class="navbar-link" href="/quizzes/randomPlay/new">Random streak</a>
-                    <a class="navbar-link" href="/quizzes/random10wa">10 random quizzes</a>
-                </div>
-            </div>
-            <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link" href="/users">Users</a>
-                <div class="navbar-dropdown is-boxed">
-                    <% if (!session.user){ %>
-                        <a class="navbar-item" href="/login">LogIn</a>
-                        <a class="navbar-item" href="/signup">SignUp</a>
-                    <% }else{ %>
-                        <a class="navbar-item" href="/users/<%= session.user.id %>" ><%= session.user.username%></a>
-                        <a class="navbar-item" href="/logout">LogOut</a>
+                <a href="/session">Login</a>
+            <% } else { %>
+                <a href="/users/<%= session.user.id %>"><%= session.user.username %></a>
+                <a href="/session?_method=DELETE">Logout</a>
+            <% } %>
+        </div>
+
+        <h1><span class="no-narrow">The</span> Quiz <span class="no-narrow">Site</span></h1>
+    </header>
+
+    <nav class="main" id="mainNav" role="navigation">
+        <a href="/">Home</a>
+        <a href="/quizzes">Quizzes</a>
+        <% if (session.user) { %>
+            <a href="/users/<%= session.user.id %>/quizzes">My Quizzes</a>
+        <% } %>
+        <a href="/author">Author</a>
+        <% if (session.user) { %>
+            <a href="/users">Users</a>
+        <% } %>
+    </nav>
+
+    <section class="main" id="mainSection">
+
+        <% if (messages.info) { %>
+            <article id='flashinfo'>
+                <h3>Information of interest:</h3>
+                <ul>
+                    <% for (var i in messages.info) { %>
+                        <li> <%= messages.info[i] %> </li>
                     <% } %>
-                </div>
-            </div>
-            <a class="navbar-item" href="/author">Author</a>
-        </div>
-    </div>
-</nav>
-<section class="hero">
-    <% if (messages.info) { %>
-        <div class='hero is-info'>
-            <h3 class="subtitle">Info:</h3>
-            <ul>
-                <% for (var i in messages.info) { %>
-                    <li> <%= messages.info[i] %> </li>
-                <% } %>
-            </ul>
-        </div>
-    <% } %>
+                </ul>
+            </article>
+        <% } %>
 
-    <% if (messages.success) { %>
-        <div class='hero is-success'>
-            <h3 class="subtitle">Tasks completed successfully:</h3>
-            <ul>
-                <% for (var i in messages.success) { %>
-                    <li> <%= messages.success[i] %> </li>
-                <% } %>
-            </ul>
-        </div>
-    <% } %>
+        <% if (messages.success) { %>
+            <article id='flashsuccess'>
+                <h3>Tasks completed successfully:</h3>
+                <ul>
+                    <% for (var i in messages.success) { %>
+                        <li> <%= messages.success[i] %> </li>
+                    <% } %>
+                </ul>
+            </article>
+        <% } %>
 
-    <% if (messages.error) { %>
-        <div class='hero is-danger'>
-            <h3 class="subtitle">Errors:</h3>
-            <ul>
-                <% for (var i in messages.error) { %>
-                    <li> <%= messages.error[i] %> </li>
-                <% } %>
-            </ul>
-        </div>
-    <% } %>
+        <% if (messages.error) { %>
+            <article id='flasherror'>
+                <h3>Errors:</h3>
+                <ul>
+                    <% for (var i in messages.error) { %>
+                        <li> <%= messages.error[i] %> </li>
+                    <% } %>
+                </ul>
+            </article>
+        <% } %>
 
-    <div class="hero-body">
         <%- body %>
+
         <% if (locals.paginate_control) { %>
             <%- paginate_control %>
         <% } %>
-    </div>
+    </section>
 
-</section>
-
+    <footer class="main" id="mainFooter">
+        <a href="http://en.wikipedia.org/wiki/Quiz">
+            What is a Quiz?</a>
+    </footer>
 </div>
-
-<footer class="footer">
-    <div class="box has-text-centered">
-        <a class='subtitle is-6' href="http://en.wikipedia.org/wiki/Quiz">Would you like to know what a quiz is?</a>
-    </div>
-</footer>
-
 </body>
 </html>
