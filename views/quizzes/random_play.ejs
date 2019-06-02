@@ -1,13 +1,11 @@
 <h2 class="subtitle is-4">Random Play</h2>
 
-<div id="slider"></div>
-<script>
-    $("#slider").roundSlider({
-        radius: 85,
-        sliderType: "range",
-        value: "<%=score%> ,<%=session.nquizzes%>"
-    });
-</script>
+<div id="progressbar">
+    <h2>You have <%= score %> out of <%= session.nquizzes %> correct. Keep on!</h2>
+    <progress value="<%= score %>" max="<%= session.nquizzes %>"></progress>
+
+</div>
+
     <div>
         <form method="post" action="/quizzes/randomcheck/<%=quiz.id%>?_method=PUT">
            <% if(!quiz.choice){ %>
