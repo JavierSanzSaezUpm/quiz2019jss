@@ -3,12 +3,10 @@
         var pw1 = document.getElementById('user_password').value;
         var pw2 = document.getElementById('user_confirm_password').value;
 
-        <% if ( !user.id) { %>
-            if (!pw1 || !pw2) {
-                alert('Password and Confirmation fields must be filled in.');
-                return false;
-            }
-        <% } %>
+        if (!pw1 || !pw2) {
+            alert('Password and Confirmation fields must be filled in.');
+            return false;
+        }
 
         if (pw1 === pw2) {
             return true;
@@ -30,33 +28,14 @@
         <% } %>
     </li>
 
-    <% if ( user.id) { %>
-        <% if (session.user.isAdmin || session.user.id === user.id) { %>
-            <li>
-                Token:
-                <b><%= user.token || 'NO TOKEN' %></b>
-                <a href="/users/<%= user.id %>/token?_method=PUT" class="button">Generate new token</a>
-            </li>
-        <% } %>
-    <% } %>
+    <li>
+        <label for="user_password" class="rem">Password:</label>
+        <input type="password" id="user_password" name="password" autocomplete="off"/>
+    </li>
 
     <li>
-        <% if (!user.id) { %>
-            <span class="text-danger">Enter the new password twice</span>
-        <% } else { %>
-            <span class="text-danger">Leave blank to not change the current password</span>
-        <% } %>
-        <ul>
-            <li>
-                <label for="user_password" class="rem">Password:</label>
-                <input type="password" id="user_password" name="password" autocomplete="off"/>
-            </li>
-
-            <li>
-                <label for="user_confirm_password" class="rem">Confirm Password:</label>
-                <input type="password" id="user_confirm_password" autocomplete="off"/>
-            </li>
-        </ul>
+        <label for="user_confirm_password" class="rem">Confirm Password:</label>
+        <input type="password" id="user_confirm_password" autocomplete="off"/>
 
     </li>
 </ul>

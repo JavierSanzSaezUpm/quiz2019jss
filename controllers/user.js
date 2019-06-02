@@ -1,10 +1,7 @@
-"use strict";
-
 const Sequelize = require("sequelize");
 const {models} = require("../models");
 
 const paginate = require('../helpers/paginate').paginate;
-const authentication = require('../helpers/authentication');
 
 // Autoload the user with id equals to :userId
 exports.load = (req, res, next, userId) => {
@@ -85,11 +82,8 @@ exports.create = (req, res, next) => {
         password
     });
 
-    // Create the token field:
-    user.token = authentication.createToken();
-
     // Save into the data base
-    user.save({fields: ["username", 'token', "password", "salt"]})
+    user.save({fields: ["username", "password", "salt"]})
     .then(user => { // Render the users page
         req.flash('success', 'User created successfully.');
         if (req.session.user) {
@@ -126,18 +120,15 @@ exports.update = (req, res, next) => {
     const {user, body} = req;
 
     // user.username  = body.user.username; // edition not allowed
+    user.password = body.password;
 
-    let fields_to_update = [];
-
-    // ¿Cambio el password?
-    if (req.body.password) {
-        console.log('Updating password');
-        user.password = body.password;
-        fields_to_update.push('salt');
-        fields_to_update.push('password');
+    // Password can not be empty
+    if (!body.password) {
+        req.flash('error', "Password field must be filled in.");
+        return res.render('users/edit', {user});
     }
 
-    user.save({fields: fields_to_update})
+    user.save({fields: ["password", "salt"]})
     .then(user => {
         req.flash('success', 'User updated successfully.');
         res.redirect('/users/' + user.id);
@@ -168,23 +159,3 @@ exports.destroy = (req, res, next) => {
     })
     .catch(error => next(error));
 };
-
-
-//-----------------------------------------------------------
-
-
-// PUT /users/:id/token
-// Create a saves a new user access token.
-exports.createToken = function (req, res, next) {
-
-    req.user.token = authentication.createToken();
-
-    req.user.save({fields: ["token"]})
-    .then(function (user) {
-        req.flash('success', 'User Access Token created successfully.');
-        res.redirect('/users/' + user.id);
-    })
-    .catch(error => next(error));
-};
-
-//-----------------------------------------------------------
