@@ -1,54 +1,14 @@
 <div class="content">
-
-    <div class="columns"></div>
-        
-        <div class="column">
             <div class="box">
-                <span class="tag is-success is-large">Creations</span>
-                <canvas id="myChart1" widht="120vh" height="120vh"></canvas>
+                <span class="tag is-success is-large">Top 10 Players in The Quiz Site</span>
+                <canvas id="myChart" widht="120vh" height="120vh"></canvas>
             </div>
-        </div>
-
-        <div class="column">
-            <div class="box">
-                <span class="tag is-success is-large">Top 10 Players</span>
-                <canvas id="myChart2" widht="120vh" height="120vh"></canvas>
-            </div>
-        </div>
-
-    </div>
+</div>
     
     <script>
-    var ctx = document.getElementById('myChart1').getContext('2d');
+    var ctx = document.getElementById('myChart').getContext('2d');
 
-    var myChart1 = new Chart(ctx, {
-        type: 'pie',
-        data: {
-            labels: ['Users','Quizzes', 'Tips'],
-            datasets: [{
-                label: '# of Elements',
-                data: [<%=nusers%>,<%=nquizzes%>,<%=ntips%>],
-                backgroundColor: [
-                    'rgba(255, 99, 132, 0.8)',
-                    'rgba(54, 162, 235, 0.8)',
-                    'rgba(200, 162, 235, 0.8)'
-                ],
-                borderColor: [
-                    'rgba(255, 99, 132, 1)',
-                    'rgba(54, 162, 235, 1)',
-                    'rgba(200, 162, 235, 1)'
-                ],
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true
-        }
-    });
-
-    var ctx = document.getElementById('myChart2').getContext('2d');
-
-    var myChart2 = new Chart(ctx, {
+    var myChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['<%=bestUsers[0].username%>',

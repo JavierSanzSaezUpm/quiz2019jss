@@ -291,7 +291,7 @@ progress[value] {
     -webkit-appearance: none;
     appearance: none;
 
-    width: 250px;
+    width: 500px;
     height: 20px;
 }
 progress[value]::-webkit-progress-bar {
@@ -311,4 +311,16 @@ progress[value]::-webkit-progress-value {
 
     border-radius: 2px;
     background-size: 35px 20px, 100% 100%, 100% 100%;
+}
+#progressbar{
+    border: 2px;
+    border-color: red;+
+    background-color: #e6eaa9;
+}
+
+/* Footer style */
+#mainFooter{
+    font-size: large;
+    color: black;
+    background-color: #ada9e9;
 }

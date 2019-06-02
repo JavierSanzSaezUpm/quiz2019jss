@@ -23,13 +23,8 @@
 
         <div class="right">
             <% if (!session.user) { %>
-
-                <% if (!!process.env.QUIZ_OPEN_REGISTER) { %>
-                    <a href="/users/new">Register</a>
-                <% } %>
-
                 <a href="/login">Login</a>
-                <a href="/signup">Login</a>
+                <a href="/signup">Sign up</a>
             <% } else { %>
                 <a href="/users/<%= session.user.id %>"><%= session.user.username %></a>
                 <a href="/logout">Logout</a>
@@ -49,7 +44,10 @@
         <% if (session.user) { %>
             <a href="/users">Users</a>
             <hr>
-            <a class="navbar-item" href="/quizzes/randomplay?_method=PUT">Play</a>
+            <a class="navbar-item" href="/quizzes/randomplay?_method=PUT">Play!</a>
+            <hr>
+            <a href="stats">Stats</a>
+            <a href="/userstats/<%= session.user.id %>">My Stats</a>
         <% } %>
     </nav>
 
