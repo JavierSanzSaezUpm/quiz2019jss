@@ -1,6 +1,6 @@
 
 <h1>Welcome to Quiz
-    <% if (!session.user) { %>
+    <% if (session.user) { %>
         <h1>,
             <%= session.user.username%>
         </h1>
