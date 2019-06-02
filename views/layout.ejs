@@ -1,166 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Quiz Fantasy</title>
+    <title>The Quiz Site</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css">
-    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
-    <link href='https://fonts.googleapis.com/css?family=Megrim' rel='stylesheet'>
-        <style>
-            .logo1 {
-                font-family: 'Megrim';font-size: 50px;
-            }
-            .logo {
-                font-family: 'Megrim';font-size: 30px;
-            }
-            .navlogo {
-                background: linear-gradient(to right, #feac5e, #c779d0, #4bc0c8);
-            }
-            .tips{
-                background: linear-gradient(to right, #83a4d4, #b6fbff);
-            }
-        </style>
+    <link rel='stylesheet' href='/stylesheets/style.css'/>
+    <link rel='stylesheet'
+          type='text/css'
+          media='only screen and (min-width: 800px) and (min-device-width: 600px)'
+          href='/stylesheets/wide.css'/>
+    <link rel='stylesheet'
+          type='text/css'
+          media='only screen and (max-width: 480px)'
+          href='/stylesheets/smartphone.css'/>
 
 </head>
 
 <body class="body">
 
-<nav class="navbar navlogo logo" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a class="navbar-item logo1" href="/">QUIZ FANTASY</a>
-    <div class="navbar-burger burger" data-target="navMenu">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-  </div>
+<div id="page">
+    <header class="main" id="mainHeader">
 
-  <div id="navMenu" class="navbar-menu">
+        <div class="right">
+            <% if (!session.user) { %>
 
-    <div class="navbar-start">
-      <a class="navbar-item" href="/">Home</a>
-      <a class="navbar-item" href="/quizzes/randomplay?_method=PUT">Play</a>
+                <% if (!!process.env.QUIZ_OPEN_REGISTER) { %>
+                    <a href="/users/new">Register</a>
+                <% } %>
 
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link" href="/users">Users</a>
-        <div class="navbar-dropdown is-boxed">
-            <% if (!session.user){ %>
-                <a class="navbar-item" href="/login">LogIn</a>
-                <a class="navbar-item" href="/signup">SignUp</a>
-            <% }else{ %>
-                <a class="navbar-item" href="/users/<%= session.user.id %>" ><%= session.user.username%></a>
-                <a class="navbar-item" href="/logout">LogOut</a>
+                <a href="/session">Login</a>
+            <% } else { %>
+                <a href="/users/<%= session.user.id %>"><%= session.user.username %></a>
+                <a href="/session?_method=DELETE">Logout</a>
             <% } %>
         </div>
-      </div>
 
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link" href="/quizzes">Quizzes</a>
-        <div class="navbar-dropdown is-boxed">
-            <a class="navbar-item" href="/quizzes?search=choice">Choice Quizzes</a>
-            <a class="navbar-item" href="/quizzes?search=nochoice">Q&A Quizzes</a>
-            <% if (session.user){ %>
-              <a class="navbar-item" href="/users/<%= session.user.id %>/quizzes">MyQuizzes</a>
-              <a class="navbar-item" href="/users/<%= session.user.id %>/quizzes?search=friends">Friends' Quizzes</a>
-            <% } %>
-        </div>
-      </div>
+        <h1><span class="no-narrow">The</span> Quiz <span class="no-narrow">Site</span></h1>
+    </header>
 
-      <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link" href="/stats">Stats</a>
-        <% if(session.user){ %>
-          <div class="navbar-dropdown is-boxed">
-              <a class="navbar-item" href="/userstats/<%= session.user.id %>">Userstats</a>
-          </div>
+    <nav class="main" id="mainNav" role="navigation">
+        <a href="/">Home</a>
+        <a href="/quizzes">Quizzes</a>
+        <% if (session.user) { %>
+            <a href="/users/<%= session.user.id %>/quizzes">My Quizzes</a>
         <% } %>
-      </div>
+        <a href="/author">Author</a>
+        <% if (session.user) { %>
+            <a href="/users">Users</a>
+            <hr>
+            <a class="navbar-item" href="/quizzes/randomplay?_method=PUT">Play</a>
+        <% } %>
+    </nav>
 
-      <a class="navbar-item" href="/credits">Credits</a>
+    <section class="main" id="mainSection">
 
-    </div>
+        <% if (messages.info) { %>
+            <article id='flashinfo'>
+                <h3>Information of interest:</h3>
+                <ul>
+                    <% for (var i in messages.info) { %>
+                        <li> <%= messages.info[i] %> </li>
+                    <% } %>
+                </ul>
+            </article>
+        <% } %>
 
-    <div class="navbar-end">
+        <% if (messages.success) { %>
+            <article id='flashsuccess'>
+                <h3>Tasks completed successfully:</h3>
+                <ul>
+                    <% for (var i in messages.success) { %>
+                        <li> <%= messages.success[i] %> </li>
+                    <% } %>
+                </ul>
+            </article>
+        <% } %>
 
-      <div class="navbar-item">
-        <div class="field is-grouped">
+        <% if (messages.error) { %>
+            <article id='flasherror'>
+                <h3>Errors:</h3>
+                <ul>
+                    <% for (var i in messages.error) { %>
+                        <li> <%= messages.error[i] %> </li>
+                    <% } %>
+                </ul>
+            </article>
+        <% } %>
 
-          <p class="control">
-            <a class="bd-tw-button button" data-social-network="Twitter" data-social-action="tweet" target="_blank" href="https://twitter.com/intent/tweet?text=QuizFantasy: the best entertaiment website in Mars &amp;hashtags=quiz2019&amp;url=https://quiz-fantasy-ajp.herokuapp.com/&amp;via=ale_j98">
-              <span class="icon">
-                <i class="fab fa-twitter"></i>
-              </span>
-              <span>
-                Tweet
-              </span>
-            </a>
-          </p>
-
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-</nav>
-
-<script type="text/javascript">
-  (function() {
-    var burger = document.querySelector('.burger');
-    var nav = document.querySelector('#'+burger.dataset.target);
-    burger.addEventListener('click', function(){
-      burger.classList.toggle('is-active');
-      nav.classList.toggle('is-active');
-    });
-  })();
-</script>
-
-<section class="hero">
-    <% if (messages.info) { %>
-        <div class='hero is-info'>
-            <h3 class="subtitle">Info:</h3>
-            <ul>
-                <% for (var i in messages.info) { %>
-                    <li> <%= messages.info[i] %> </li>
-                <% } %>
-            </ul>
-        </div>
-    <% } %>
-
-    <% if (messages.success) { %>
-        <div class='hero is-success'>
-            <h3 class="subtitle">Tasks completed successfully:</h3>
-            <ul>
-                <% for (var i in messages.success) { %>
-                    <li> <%= messages.success[i] %> </li>
-                <% } %>
-            </ul>
-        </div>
-    <% } %>
-
-    <% if (messages.error) { %>
-        <div class='hero is-danger'>
-            <h3 class="subtitle">Errors:</h3>
-            <ul>
-                <% for (var i in messages.error) { %>
-                    <li> <%= messages.error[i] %> </li>
-                <% } %>
-            </ul>
-        </div>
-    <% } %>
-
-    <div class="hero-body">
         <%- body %>
+
         <% if (locals.paginate_control) { %>
-          <%- paginate_control %>
+            <%- paginate_control %>
         <% } %>
-    </div>
     </section>
-<footer class="footer">
-  <div class="box has-text-centered">
-    <a class='subtitle is-6' href="http://en.wikipedia.org/wiki/Quiz">Who doesn't care about what a quiz is?</a>
-  </div>
-</footer>
+
+    <footer class="main" id="mainFooter">
+        <a href="http://en.wikipedia.org/wiki/Quiz">
+            What is a Quiz?</a>
+    </footer>
+</div>
 </body>
 </html>
