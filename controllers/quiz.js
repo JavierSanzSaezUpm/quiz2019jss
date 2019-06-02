@@ -543,6 +543,304 @@ exports.play = (req, res, next) => {
     .catch(error => next(error));
 };
 
+const randomPlayNextQuiz = (req, res, next) => {
+
+    if (!req.session.randomPlay) {
+        req.session.randomPlay = {
+            currentQuizId: 0,
+            resolved: []
+        };
+    }
+
+    Sequelize.Promise.resolve()
+        .then(() => {
+            // volver a mostrar la misma pregunta que la ultima vez que pase por aqui y no conteste:
+            if (req.session.randomPlay.currentQuizId) {
+                return req.session.randomPlay.currentQuizId;
+            } else {
+                // elegir una pregunta al azar no repetida:
+                return randomQuizId(req.session.randomPlay.resolved);
+            }
+        })
+        .then(quizId => {
+
+            if (!quizId) {
+
+                const score = req.session.randomPlay.resolved.length;
+
+                delete req.session.randomPlay;
+
+                res.json({nomore: true, score});
+            } else {
+
+                return models.quiz.findById(quizId, {
+                    attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
+                    include: [
+                        {
+                            model: models.tip,
+                            where: {accepted: true},
+                            required: false,
+                            attributes: ['text']
+                        },
+                        {
+                            model: models.attachment,
+                            attributes: ['filename', 'mime', 'url']
+                        },
+                        {
+                            model: models.user,
+                            as: 'author',
+                            attributes: ['isAdmin', 'username']
+                        },
+                        {
+                            model: models.user,
+                            as: "fans",
+                            attributes: ['id'],
+                            through: {attributes: []}
+                        }
+                    ]
+                })
+                    .then(quiz => {
+                        if (!quiz) {
+                            throw new Error('There is no quiz with id=' + quizId);
+                        }
+
+                        const score = req.session.randomPlay.resolved.length;
+
+                        req.session.randomPlay.currentQuizId = quizId;
+
+                        // If this quiz is one of my favourites, then I create
+                        // the attribute "favourite = true"
+
+                        res.json({
+                            quiz: {
+                                id: quiz.id,
+                                question: quiz.question,
+                                author: quiz.author,
+                                attachment: quiz.attachment,
+                                favourite: quiz.fans.some(fan => fan.id == req.token.userId),
+                                tips: quiz.tips.map(tip => tip.text)
+                            },
+                            score
+                        });
+                    });
+
+            }
+        })
+        .catch(error => next(error));
+};
+exports.randomPlayNew = (req, res, next) => {
+
+    req.session.randomPlay = {
+        currentQuizId: 0,
+        resolved: []
+    };
+
+    randomPlayNextQuiz(req, res, next);
+};
+// GET /quizzes/random
+exports.random = (req, res, next) => {
+
+    const {token} = req;
+
+    randomQuizId([])
+        .then(quizId => {
+
+            if (quizId) {
+                return models.quiz.findById(quizId, {
+                    attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
+                    include: [
+                        {
+                            model: models.tip,
+                            where: {accepted: true},
+                            required: false,
+                            attributes: ['text']
+                        },
+                        {
+                            model: models.attachment,
+                            attributes: ['filename', 'mime', 'url']
+                        },
+                        {
+                            model: models.user,
+                            as: 'author',
+                            attributes: ['isAdmin', 'username']
+                        },
+                        {
+                            model: models.user,
+                            as: "fans",
+                            attributes: ['id'],
+                            through: {attributes: []}
+                        }]
+                })
+                    .then(quiz => {
+                        if (!quiz) {
+                            throw new Error('There is no quiz with id=' + quizId);
+                        }
+
+                        // If this quiz is one of my favourites, then I create
+                        // the attribute "favourite = true"
+
+                        res.json({
+                            id: quiz.id,
+                            question: quiz.question,
+                            author: quiz.author,
+                            attachment: quiz.attachment,
+                            favourite: quiz.fans.some(fan => fan.id == token.userId),
+                            tips: quiz.tips.map(tip => tip.text)
+                        });
+                    });
+            } else {
+                res.json({nomore: true});
+            }
+        })
+        .catch(error => next(error));
+};
+
+exports.randomPlayCheck = (req, res, next) => {
+
+    if (!req.session.randomPlay ||
+        (req.session.randomPlay.currentQuizId === 0)) {
+        res.sendStatus(409);
+        return;
+    }
+
+    const quizId = req.session.randomPlay.currentQuizId;
+
+    models.quiz.findById(quizId)
+        .then(function (quiz) {
+            if (quiz) {
+
+                const answer = req.query.answer || "";
+
+                const result = answer.toLowerCase().trim() === quiz.answer.toLowerCase().trim();
+
+                if (result) {
+                    req.session.randomPlay.currentQuizId = 0;
+
+                    // Evitar que me hagan llamadas a este metodo manualmente con una respuesta acertada para
+                    // que se guarde muchas veces la misma respuesta en resolved, y asi conseguir que score
+                    // se incremente indebidamente.
+                    if (req.session.randomPlay.resolved.indexOf(quiz.id) == -1) {
+                        req.session.randomPlay.resolved.push(quiz.id);
+                    }
+                }
+
+                const score = req.session.randomPlay.resolved.length;
+
+                if (!result) {
+                    delete req.session.randomPlay;
+                }
+
+                res.json({
+                    answer,
+                    quizId: quiz.id,
+                    result,
+                    score});
+
+            } else {
+                throw new Error('There is no quiz with id=' + quizId);
+            }
+        })
+        .catch(function (error) {
+            next(error);
+        });
+};
+
+//-----------------------------------------------------------
+
+// GET /quizzes/random10wa
+exports.random10wa = async (req, res, next) => {
+
+    try {
+        const {token} = req;
+
+        let quizIds = [];
+        let quizzes = [];
+
+        const count = await models.quiz.count();
+
+        for (let i = 0; i < 10 && i < count; i++) {
+            const whereOpt = {'id': {[Sequelize.Op.notIn]: quizIds}};
+
+            const qarr = await models.quiz.findAll({
+                where: whereOpt,
+                attributes: {exclude: ['createdAt', 'updatedAt', 'deletedAt']},
+                include: [
+                    {
+                        model: models.tip,
+                        where: {accepted: true},
+                        required: false,
+                        attributes: ['text']
+                    },
+                    {
+                        model: models.attachment,
+                        attributes: ['filename', 'mime', 'url']
+                    },
+                    {
+                        model: models.user,
+                        as: 'author',
+                        attributes: ['isAdmin', 'username']
+                    },
+                    {
+                        model: models.user,
+                        as: "fans",
+                        attributes: ['id'],
+                        through: {attributes: []}
+                    }
+                ],
+                offset: Math.floor(Math.random() * (count - i)),
+                limit: 1
+            });
+
+            if (!qarr.length) break;
+
+            const quiz = qarr[0]
+
+            quizIds.push(quiz.id);
+            quizzes.push(quiz);
+        }
+
+        // If this quiz is one of my favourites, then I create
+        // the attribute "favourite = true"
+
+        res.json(quizzes.map(quiz => ({
+            id: quiz.id,
+            question: quiz.question,
+            answer: quiz.answer,
+            author: quiz.author,
+            attachment: quiz.attachment,
+            favourite: quiz.fans.some(fan => fan.id == token.userId),
+            tips: quiz.tips.map(tip => tip.text)
+        })));
+    }
+    catch(error) {
+        next(error);
+    }
+};
+
+//-----------------------------------------------------------
+
+/**
+ * Returns a promise to get a random quizId.
+ * Excludes the ids given in the parameter.
+ *
+ * @param exclude Array of ids to exclude.
+ *
+ * @return A promise
+ */
+const randomQuizId = exclude => {
+
+    const whereOpt = {'id': {[Sequelize.Op.notIn]: exclude}};
+
+    return models.quiz.count({where: whereOpt})
+        .then(count => models.quiz.findAll({
+            where: whereOpt,
+            offset: Math.floor(Math.random() * count),
+            limit: 1
+        }))
+        .then(quizzes => quizzes.length ? quizzes[0].id : 0);
+};
+
+
 
 // GET /quizzes/:quizId/check
 exports.check = (req, res, next) => {

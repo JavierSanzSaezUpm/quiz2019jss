@@ -145,6 +145,11 @@ router.delete('/quizzes/:quizId(\\d+)/tips/:tipId(\\d+)',
     quizController.adminOrAuthorRequired,
     tipController.destroy);
 
+router.get('/quizzes/random',
+    sessionController.loginRequired,
+    quizController.adminOrAuthorRequired,
+    quizController.random);
+
 
 // Routes for the resource favourites of a user
 router.put('/users/:userId(\\d+)/favourites/:quizId(\\d+)',
