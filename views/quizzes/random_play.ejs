@@ -1,6 +1,13 @@
 <h2 class="subtitle is-4">Random Play</h2>
-<progress class="progress is-success" value="<%= score %>" max="<%= session.nquizzes %>"></progress>
 
+<div id="slider"></div>
+<script>
+    $("#slider").roundSlider({
+        radius: 85,
+        sliderType: "range",
+        value: "<%=score%> ,<%=session.nquizzes%>"
+    });
+</script>
     <div>
         <form method="post" action="/quizzes/randomcheck/<%=quiz.id%>?_method=PUT">
            <% if(!quiz.choice){ %>
