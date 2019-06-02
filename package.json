@@ -23,6 +23,7 @@
     "npm": "6.4.1"
   },
   "dependencies": {
+    "bulma": "^0.7.5",
     "cloudinary": "^1.13.2",
     "connect-session-sequelize": "^6.0.0",
     "cookie-parser": "~1.4.3",
