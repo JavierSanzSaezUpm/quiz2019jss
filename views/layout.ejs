@@ -28,10 +28,11 @@
                     <a href="/users/new">Register</a>
                 <% } %>
 
-                <a href="/session">Login</a>
+                <a href="/login">Login</a>
+                <a href="/signup">Login</a>
             <% } else { %>
                 <a href="/users/<%= session.user.id %>"><%= session.user.username %></a>
-                <a href="/session?_method=DELETE">Logout</a>
+                <a href="/logout">Logout</a>
             <% } %>
         </div>
 
@@ -44,7 +45,7 @@
         <% if (session.user) { %>
             <a href="/users/<%= session.user.id %>/quizzes">My Quizzes</a>
         <% } %>
-        <a href="/author">Author</a>
+        <a href="/credits">Author</a>
         <% if (session.user) { %>
             <a href="/users">Users</a>
             <hr>
