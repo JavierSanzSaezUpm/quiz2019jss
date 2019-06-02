@@ -40,6 +40,9 @@ module.exports = {
             type: Sequelize.DATE,
             allowNull: false
           },
+            salt: {
+                type: Sequelize.STRING
+            },
           updatedAt: {
             type: Sequelize.DATE,
             allowNull: false
