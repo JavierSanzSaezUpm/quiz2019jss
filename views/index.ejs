@@ -1,5 +1,12 @@
 
-<h1>Welcome to Quiz</h1>
+<h1>Welcome to Quiz
+    <% if (!session.user) { %>
+        <h1>,
+            <%= session.user.username%>
+        </h1>
+        <% } %>
+    !
+</h1>
 
 <p>The web site where you can create your own games!</p>
 
