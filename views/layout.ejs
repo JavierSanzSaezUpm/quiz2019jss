@@ -41,14 +41,14 @@
         <% if (session.user) { %>
             <a href="/users/<%= session.user.id %>/quizzes">My Quizzes</a>
         <% } %>
-        <a href="/author">Author</a>
+
         <% if (session.user) { %>
             <a href="/users">Users</a>
         <% } %>
     </nav>
 
     <section class="main" id="mainSection">
-
+        <div class="container">
         <% if (messages.info) { %>
             <article id='flashinfo'>
                 <h3>Information of interest:</h3>
@@ -87,11 +87,22 @@
         <% if (locals.paginate_control) { %>
             <%- paginate_control %>
         <% } %>
+        </div>
     </section>
 
-    <footer class="main" id="mainFooter">
-        <a href="http://en.wikipedia.org/wiki/Quiz">
-            What is a Quiz?</a>
+    <footer class="footer level" id="mainFooter">
+        <div class="level-left">
+            <div class="level-item">
+            <a href="http://en.wikipedia.org/wiki/Quiz">
+                Would you like to know what a Quiz is?</a>
+            </div>
+        </div>
+        <div class="level-right">
+            <div class="level-item">
+                <p class="title">This wonderful page was created by</p>
+                <a href="/authors">Me</a>
+            </div>
+        </div>
     </footer>
 </div>
 </body>
