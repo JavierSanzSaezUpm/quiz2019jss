@@ -36,7 +36,7 @@ module.exports = {
           answer3: 'CORE',
           createdAt: new Date(),
           updatedAt: new Date()
-      },
+      }
     ]);
   },
 
