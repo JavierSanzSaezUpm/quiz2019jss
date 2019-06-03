@@ -40,7 +40,6 @@
         <% if (session.user) { %>
             <a href="/users/<%= session.user.id %>/quizzes">My Quizzes</a>
         <% } %>
-        <a href="/credits">Author</a>
         <% if (session.user) { %>
             <a href="/users">Users</a>
             <hr>
@@ -49,6 +48,8 @@
             <a href="stats">Stats</a>
             <a href="/userstats/<%= session.user.id %>">My Stats</a>
         <% } %>
+        <hr>
+        <a href="/credits">Author</a>
     </nav>
 
     <section class="main" id="mainSection">
