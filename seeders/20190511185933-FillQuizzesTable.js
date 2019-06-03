@@ -28,6 +28,7 @@ module.exports = {
           createdAt: new Date(),
           updatedAt: new Date()
       },
+      {
                 choice: true,
           question: 'For which subject is this project to?',
           answer: 'CORE',
