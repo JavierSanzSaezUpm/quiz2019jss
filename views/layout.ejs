@@ -20,14 +20,16 @@
 
 <div id="page">
     <header class="main" id="mainHeader">
-
+        <div class="left">
+            <a href="https://twitter.com/intent/tweet?button_hashtag=LoveQuizzes&ref_src=twsrc%5Etfw" class="twitter-hashtag-button" data-text="I am just in love with the quizzes! Go check this out!" data-show-count="false">Tweet #LoveQuizzes</a><script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        </div>
         <div class="right">
             <% if (!session.user) { %>
-                <a href="/login">Login</a>
-                <a href="/signup">Sign up</a>
+                <a href="/login"class="button">Login</a>
+                <a href="/signup"class="button">Sign up</a>
             <% } else { %>
-                <a href="/users/<%= session.user.id %>"><%= session.user.username %></a>
-                <a href="/logout">Logout</a>
+                <a href="/users/<%= session.user.id %>" class="button"><%= session.user.username %></a>
+                <a href="/logout"class="button">Logout</a>
             <% } %>
         </div>
 

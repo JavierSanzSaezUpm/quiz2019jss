@@ -42,7 +42,7 @@ a {
 
 a.button {
     display: inline-block;
-    font-size: x-small;
+    font-size: small;
     text-decoration: none;
     padding: 1px 4px;
     margin: 2px;
@@ -55,6 +55,11 @@ a.button {
 a.button:hover {
     background: lightgray;
 }
+
+.left{
+    float:left;
+}
+
 
 .right {
     float: right;
